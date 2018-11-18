@@ -37,14 +37,6 @@ const shopifyConfig = {
   },
 };
 
-const registerWebhook = function(shopDomain, accessToken, webhook) {
-  const shopify = new ShopifyAPIClient({ shopName: shopDomain, accessToken: accessToken });
-  shopify.webhook.create(webhook).then(
-    response => console.log(`webhook '${webhook.topic}' created`),
-    err => console.log(`Error creating webhook '${webhook.topic}'. ${JSON.stringify(err.response.body)}`)
-  );
-}
-
 const app = express();
 const isDevelopment = NODE_ENV !== 'production';
 
@@ -93,7 +85,7 @@ const shopify = ShopifyExpress(shopifyConfig);
 
 // Mount Shopify Routes
 const {routes, middleware} = shopify;
-const {withShop, withWebhook} = middleware;
+const {withShop} = middleware;
 
 app.use('/shopify', routes);
 
@@ -107,16 +99,6 @@ app.get('/', withShop({authBaseUrl: '/shopify'}), function(request, response) {
   });
 });
 
-app.post('/order-create', withWebhook((error, request) => {
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  console.log('We got a webhook!');
-  console.log('Details: ', request.webhook);
-  console.log('Body:', request.body);
-}));
 
 // Error Handlers
 app.use(function(req, res, next) {
