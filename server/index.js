@@ -33,12 +33,6 @@ const shopifyConfig = {
   afterAuth(request, response) {
     const { session: { accessToken, shop } } = request;
 
-    registerWebhook(shop, accessToken, {
-      topic: 'orders/create',
-      address: `${SHOPIFY_APP_HOST}/order-create`,
-      format: 'json'
-    });
-
     return response.redirect('/');
   },
 };
